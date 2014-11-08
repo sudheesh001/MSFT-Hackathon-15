@@ -3,8 +3,8 @@ var Core = new function(){
 	// Flags if we are running mobile mode
 	var isMobile = !!navigator.userAgent.toLowerCase().match( /ipod|ipad|iphone|android/gi );
 	
-	var DEFAULT_WIDTH = 900,
-		DEFAULT_HEIGHT = 550,
+	var DEFAULT_WIDTH = window.innerWidth,
+		DEFAULT_HEIGHT = window.innerHeight,
 		BORDER_WIDTH = 6,
 		FRAMERATE = 60;
 	
@@ -111,8 +111,8 @@ var Core = new function(){
 	
 	function renderBackground() {
 		var gradient = contextBackground.createRadialGradient( world.width * 0.5, world.height * 0.5, 0, world.width * 0.5, world.height * 0.5, 500 );
-		gradient.addColorStop(0,'rgba(0, 70, 70, 1)');
-		gradient.addColorStop(1,'rgba(0, 8, 14, 1)');
+		gradient.addColorStop(0,'rgba(0, 0, 0, 0)');
+		gradient.addColorStop(1,'rgba(0, 0, 0, 0)');
 		
 		contextBackground.fillStyle = gradient;
 		contextBackground.fillRect( 0, 0, world.width, world.height );
@@ -443,8 +443,8 @@ var Core = new function(){
 			
 			p.alpha += ( 1 - p.alpha ) * 0.1;
 			var image=new Image();
-			image.src="./Pizza.svg";
-			if( p.type == ORGANISM_ENEMY ) context.drawImage(image,p.position.x,p.position.y,80,80);/*fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';*/
+			image.src="./img/pizza.svg";
+			if( p.type == ORGANISM_ENEMY ) context.drawImage(image,p.position.x,p.position.y,20,20);/*fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';*/
 			var image1=new Image();
 			image1.src="./img/carrot.png";
 			if( p.type == ORGANISM_ENERGY ) context.drawImage(image1,p.position.x,p.position.y,20,20);/*context.fillStyle = 'rgba( 0, 235, 190, ' + p.alpha + ' )';*/

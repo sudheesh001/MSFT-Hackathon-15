@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var Core = new function () {
 	var baditems = ["pizza","burger","frenchies","noodles","puff"];
 	var item=baditems[0];
@@ -6,6 +7,15 @@ var Core = new function () {
 
     var DEFAULT_WIDTH = 900,
 		DEFAULT_HEIGHT = 550,
+=======
+var Core = new function(){
+	
+	// Flags if we are running mobile mode
+	var isMobile = !!navigator.userAgent.toLowerCase().match( /ipod|ipad|iphone|android/gi );
+	
+	var DEFAULT_WIDTH = window.innerWidth,
+		DEFAULT_HEIGHT = window.innerHeight,
+>>>>>>> 8e0862079c2ad9ed049df0effc1238ef5312fe00
 		BORDER_WIDTH = 6,
 		FRAMERATE = 60;
 
@@ -24,6 +34,7 @@ var Core = new function () {
 
     var canvasBackground,
 		contextBackground;
+<<<<<<< HEAD
 
     // UI DOM elements
     var status;
@@ -120,6 +131,104 @@ var Core = new function () {
     }
 
     /**
+=======
+	
+	// UI DOM elements
+	var status;
+	var panels;
+	var message;
+	var title;
+	var startButton;
+	
+	// Game elements
+	var organisms = [];
+	var particles = [];
+	var player;
+	
+	// Mouse properties
+	var mouseX = (window.innerWidth + world.width) * 0.5;
+	var mouseY = (window.innerHeight + world.height) * 0.5;
+	var mouseIsDown = false;
+	var spaceIsDown = false;
+	
+	// Game properties and scoring
+	var playing = false;
+	var score = 0;
+	var time = 0;
+	var duration = 0;
+	var difficulty = 1;
+	var lastspawn = 0;
+	
+	// Game statistics
+	var fc = 0; // Frame count
+	var fs = 0; // Frame score
+	var cs = 0; // Collision score
+	
+	// The world's velocity
+	var velocity = { x: -1.3, y: 1 };
+	
+	// Performance (FPS) tracking
+	var fps = 0;
+	var fpsMin = 1000;
+	var fpsMax = 0;
+	var timeLastSecond = new Date().getTime();
+	var frames = 0;
+	
+	this.init = function(){
+	
+		canvas = document.getElementById('world');
+		canvasBackground = document.getElementById('background');
+		panels = document.getElementById('panels');
+		status = document.getElementById('status');
+		message = document.getElementById('message');
+		title = document.getElementById('title');
+		startButton = document.getElementById('startButton');
+		
+		if (canvas && canvas.getContext) {
+			context = canvas.getContext('2d');
+			
+			contextBackground = canvasBackground.getContext('2d');
+			
+			// Register event listeners
+			document.addEventListener('mousemove', documentMouseMoveHandler, false);
+			document.addEventListener('mousedown', documentMouseDownHandler, false);
+			document.addEventListener('mouseup', documentMouseUpHandler, false);
+			canvas.addEventListener('touchstart', documentTouchStartHandler, false);
+			document.addEventListener('touchmove', documentTouchMoveHandler, false);
+			document.addEventListener('touchend', documentTouchEndHandler, false);
+			window.addEventListener('resize', windowResizeHandler, false);
+			startButton.addEventListener('click', startButtonClickHandler, false);
+			document.addEventListener('keydown', documentKeyDownHandler, false);
+			document.addEventListener('keyup', documentKeyUpHandler, false);
+			
+			// Define our player
+			player = new Player();
+			
+			// Force an initial resize to make sure the UI is sized correctly
+			windowResizeHandler();
+			
+			// If we are running on mobile, certain elements need to be configured differently
+			if( isMobile ) {
+				document.getElementsByTagName('header')[0].style.display = 'none';
+				status.style.width = world.width + 'px';
+				canvas.style.border = 'none';
+			}
+			
+			animate();
+		}
+	};
+	
+	function renderBackground() {
+		var gradient = contextBackground.createRadialGradient( world.width * 0.5, world.height * 0.5, 0, world.width * 0.5, world.height * 0.5, 500 );
+		gradient.addColorStop(0,'rgba(0, 0, 0, 0)');
+		gradient.addColorStop(1,'rgba(0, 0, 0, 0)');
+		
+		contextBackground.fillStyle = gradient;
+		contextBackground.fillRect( 0, 0, world.width, world.height );
+	}
+	
+	/**
+>>>>>>> 8e0862079c2ad9ed049df0effc1238ef5312fe00
 	 * Handles click on the start button in the UI.
 	 */
     function startButtonClickHandler(event) {
@@ -351,6 +460,7 @@ var Core = new function () {
 			ilen,
 			j,
 			jlen;
+<<<<<<< HEAD
 
         // Only update game properties and draw the player if a game is active
         if (playing) {
@@ -564,6 +674,216 @@ var Core = new function () {
     }
 
     /**
+=======
+		
+		// Only update game properties and draw the player if a game is active
+		if( playing ) {
+			
+			// Increment the difficulty slightly
+			difficulty += 0.0015;
+			
+			// Increment the score depending on difficulty
+			score += (0.4 * difficulty) * scoreFactor;
+			
+			// Increase the game frame count stat
+			fc ++;
+			
+			// Increase the score count stats
+			fs += (0.4 * difficulty) * scoreFactor;
+			
+			//player.angle = Math.atan2( mouseY - player.position.y, mouseX - player.position.x );
+			
+			var targetAngle = Math.atan2( mouseY - player.position.y, mouseX - player.position.x );
+			
+			if( Math.abs( targetAngle - player.angle ) > Math.PI ) {
+				player.angle = targetAngle;
+			}
+			
+			player.angle += ( targetAngle - player.angle ) * 0.2;
+			
+			player.energyRadiusTarget = ( player.energy / 100 ) * ( player.radius * 0.8 );
+			player.energyRadius += ( player.energyRadiusTarget - player.energyRadius ) * 0.2;
+			
+			player.shield = { x: player.position.x + Math.cos( player.angle ) * player.radius, y: player.position.y + Math.sin( player.angle ) * player.radius };
+			
+			// Shield
+			context.beginPath();
+			context.strokeStyle = '#648d93';
+			context.lineWidth = 3;
+			context.arc( player.position.x, player.position.y, player.radius, player.angle + 1.6, player.angle - 1.6, true );
+			context.stroke();
+			
+			// Core
+			context.beginPath();
+			context.fillStyle = "#249d93";
+			context.strokeStyle = "#3be2d4";
+			context.lineWidth = 1.5;
+			
+			player.updateCore();
+			
+			var loopedNodes = player.coreNodes.concat();
+			loopedNodes.push( player.coreNodes[0] );
+			
+			for( var i = 0; i < loopedNodes.length; i++ ) {
+				p = loopedNodes[i];
+				p2 = loopedNodes[i+1];
+				
+				p.position.x += ( (player.position.x + p.normal.x + p.offset.x) - p.position.x ) * 0.2;
+				p.position.y += ( (player.position.y + p.normal.y + p.offset.y) - p.position.y ) * 0.2;
+				
+				if( i == 0 ) {
+					// This is the first loop, so we need to start by moving into position
+					context.moveTo( p.position.x, p.position.y );
+				}
+				else if( p2 ) {
+					// Draw a curve between the current and next trail point
+					context.quadraticCurveTo( p.position.x, p.position.y, p.position.x + ( p2.position.x - p.position.x ) / 2, p.position.y + ( p2.position.y - p.position.y ) / 2 );
+				}
+			}
+			
+			context.closePath();
+			context.fill();
+			context.stroke();
+			
+		}
+		
+		if( spaceIsDown && player.energy > 10 ) {
+			player.energy -= 0.1;
+			
+			context.beginPath();
+			context.fillStyle = 'rgba( 0, 100, 100, ' + ( player.energy / 100 ) * 0.9 + ' )';
+			context.arc( player.position.x, player.position.y, player.radius, 0, Math.PI*2, true );
+			context.fill();
+		}
+		
+		var enemyCount = 0;
+		var energyCount = 0;
+		
+		// Go through each enemy and draw it + update its properties
+		for( i = 0; i < organisms.length; i++ ) {
+			p = organisms[i];
+			
+			p.position.x += p.velocity.x;
+			p.position.y += p.velocity.y;
+			
+			p.alpha += ( 1 - p.alpha ) * 0.1;
+			var image=new Image();
+			image.src="./img/pizza.svg";
+			if( p.type == ORGANISM_ENEMY ) context.drawImage(image,p.position.x,p.position.y,20,20);/*fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';*/
+			var image1=new Image();
+			image1.src="./img/carrot.png";
+			if( p.type == ORGANISM_ENERGY ) context.drawImage(image1,p.position.x,p.position.y,20,20);/*context.fillStyle = 'rgba( 0, 235, 190, ' + p.alpha + ' )';*/
+			
+			context.beginPath();
+			// context.arc(p.position.x, p.position.y, p.size/2, 0, Math.PI*2, true);
+			context.fill();
+			
+			var angle = Math.atan2( p.position.y - player.position.y, p.position.x - player.position.x );
+			
+			if (playing) {
+				
+				var dist = Math.abs( angle - player.angle );
+				
+				if( dist > Math.PI ) {
+					dist = ( Math.PI * 2 ) - dist;
+				}
+				
+				if ( dist < 1.6 ) {
+					if (p.distanceTo(player.position) > player.radius - 5 && p.distanceTo(player.position) < player.radius + 5) {
+						p.dead = true;
+					}
+				}
+				
+				if (spaceIsDown && p.distanceTo(player.position) < player.radius && player.energy > 11) {
+					p.dead = true;
+					score += 4;
+				}
+				
+				if (p.distanceTo(player.position) < player.energyRadius + (p.size * 0.5)) {
+					if (p.type == ORGANISM_ENEMY) {
+						player.energy -= 6;
+					}
+					
+					if (p.type == ORGANISM_ENERGY) {
+						player.energy += 8;
+						score += 30;
+					}
+					
+					player.energy = Math.max(Math.min(player.energy, 100), 0);
+					
+					p.dead = true;
+				}
+			}
+			
+			// If the enemy is outside of the game bounds, destroy it
+			if( p.position.x < -p.size || p.position.x > world.width + p.size || p.position.y < -p.size || p.position.y > world.height + p.size ) {
+				p.dead = true;
+			}
+			
+			// If the enemy is dead, remove it
+			if( p.dead ) {
+				emitParticles( p.position, { x: (p.position.x - player.position.x) * 0.02, y: (p.position.y - player.position.y) * 0.02 }, 5, 5 );
+				
+				organisms.splice( i, 1 );
+				i --;
+			}
+			else {
+				if( p.type == ORGANISM_ENEMY ) enemyCount ++;
+				if( p.type == ORGANISM_ENERGY ) energyCount ++;
+			}
+		}
+		
+		// If there are less enemies than intended for this difficulty, add another one
+		if( enemyCount < 1 * difficulty && new Date().getTime() - lastspawn > 100 ) {
+			organisms.push( giveLife( new Enemy() ) );
+			lastspawn = new Date().getTime();
+		}
+		
+		// 
+		if( energyCount < 1 && Math.random() > 0.996 ) {
+			organisms.push( giveLife( new Energy() ) );
+		}
+		
+		// Go through and draw all particle effects
+		for( i = 0; i < particles.length; i++ ) {
+			p = particles[i];
+			
+			// Apply velocity to the particle
+			p.position.x += p.velocity.x;
+			p.position.y += p.velocity.y;
+			
+			// Fade out
+			p.alpha -= 0.02;
+			
+			// Draw the particle
+			context.fillStyle = 'rgba(255,255,255,'+Math.max(p.alpha,0)+')';
+			context.fillRect( p.position.x, p.position.y, 1, 1 );
+			
+			// If the particle is faded out to less than zero, remove it
+			if( p.alpha <= 0 ) {
+				particles.splice( i, 1 );
+			}
+		}
+		
+		// If the game is active, update the game status bar with score, duration and FPS
+		if( playing ) {
+			scoreText = 'Score: <span>' + Math.round( score ) + '</span>';
+			scoreText += ' Time: <span>' + Math.round( ( ( new Date().getTime() - time ) / 1000 ) * 100 ) / 100 + 's</span>';
+			scoreText += ' <p class="fps">FPS: <span>' + Math.round( fps ) + ' ('+Math.round(Math.max(Math.min(fps/FRAMERATE, FRAMERATE), 0)*100)+'%)</span></p>';
+			status.innerHTML = scoreText;
+			
+			if( player.energy === 0 ) {
+				emitParticles( player.position, { x: 0, y: 0 }, 10, 40 );
+				
+				gameOver();
+			}
+		}
+		
+		requestAnimFrame( animate );
+	}
+	
+	/**
+>>>>>>> 8e0862079c2ad9ed049df0effc1238ef5312fe00
 	 * 
 	 */
     function giveLife(organism) {

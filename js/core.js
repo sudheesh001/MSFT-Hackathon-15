@@ -1,4 +1,4 @@
-var baditems = ["pizza","burger","frenchies","noodles","puff"];
+var baditems = ["pizza","burger","frenchies","noodles"];
 var gooditems = ["vegeatable","fruits","greenies","milk","boiledegg"];
 var Core = new function () {
     // Flags if we are running mobile mode
@@ -16,7 +16,7 @@ var Core = new function () {
     // The world dimensions
     var world = {
         width: isMobile ? window.innerWidth : DEFAULT_WIDTH,
-        height: isMobile ? window.innerHeight : DEFAULT_HEIGHT
+        height: isMobile ? window.innerHeight : DEFAULT_HEIGHT,
     };
 
     var canvas,
@@ -111,8 +111,8 @@ var Core = new function () {
 
     function renderBackground() {
         var gradient = contextBackground.createRadialGradient(world.width * 0.5, world.height * 0.5, 0, world.width * 0.5, world.height * 0.5, 500);
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(0, 'rgba(23, 120, 235, 0.2)');
+        gradient.addColorStop(1, 'rgba(120, 100, 230, 0.6)');
 
         contextBackground.fillStyle = gradient;
         contextBackground.fillRect(0, 0, world.width, world.height);
@@ -385,8 +385,8 @@ var Core = new function () {
             context.beginPath();
             context.fillStyle=' rgba(210,255,82,1)';
             context.strokeStyle = '#648d93';
-            context.lineWidth = 15;
-            context.arc(player.position.x, player.position.y, player.radius, player.angle + 1.6, player.angle - 1.6, true);
+            context.lineWidth = 3.5;
+            context.arc(player.position.x, player.position.y, player.radius, player.angle + (Math.PI/2), player.angle - (Math.PI/2), true);
             context.stroke();
 
             // Core
@@ -446,21 +446,32 @@ var Core = new function () {
             p.alpha += (1 - p.alpha) * 0.1;
             
             if (p.type == ORGANISM_ENEMY) {
-            	var image = new Image();            
+            	var image = new Image();
             	image.src = "./img/"+p.image+".png";
-                context.drawImage(image, p.position.x, p.position.y, 40,40);
-             context.fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';
+                if(p.position.x>world.width/2)
+                    context.drawImage(image,p.position.x+p.size/2,p.position.y,p.size,p.size);
+                else if(p.position.x <  world.width/2)
+                    context.drawImage(image,p.position.x-p.size/2,p.position.y,p.size,p.size);
+                else if(p.position.y>world.width/2)
+                    context.drawImage(image,p.position.x,p.position.y+p.size/2,p.size,p.size);
+                else if(p.position.y <  world.width/2)
+                    context.drawImage(image,p.position.x,p.position.y-p.size/2,p.size,p.size);
+             // context.fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';
             }
             if (p.type == ORGANISM_ENERGY){
             	// context.fillStyle = 'rgba( 0, 235, 190, ' + p.alpha + ' )';
             	
             	var image1 = new Image();
             	image1.src = "./img/"+p.image+".png";
-            	context.drawImage(image1, p.position.x, p.position.y, 40, 40);
+            	if(p.position.x>world.width/2)
+                    context.drawImage(image1,p.position.x+p.size/2,p.position.y,p.size,p.size);
+                else if(p.position.x <  world.width/2)
+                    context.drawImage(image1,p.position.x-p.size/2,p.position.y,p.size,p.size);
         	}
 			/* context.fillStyle = 'rgba( 0, 235, 190, ' + p.alpha + ' )';*/
             context.beginPath();
             // context.arc(p.position.x, p.position.y, p.size/2, 0, Math.PI*2, true);
+
             context.fill();
 
             var angle = Math.atan2(p.position.y - player.position.y, p.position.x - player.position.x);
@@ -468,16 +479,15 @@ var Core = new function () {
             if (playing) {
 
                 var dist = Math.abs(angle - player.angle);
-
-                if (dist >= Math.PI) {
-                    dist = (Math.PI * 2)-dist-1;
-                    console.log(dist);
+                if (dist > Math.PI) {
+                    dist = (Math.PI * 2)-dist;
                 }
 
                 if (dist < 1.6) {
-                    if (p.distanceTo(player.position) > player.radius - 5 && p.distanceTo(player.position) < player.radius + 5) {
-                        p.dead = true;
-                    }
+                    
+                        if (p.distanceTo(player.position) > player.radius - 5 && p.distanceTo(player.position) < player.radius + 5) {
+                            p.dead = true;
+                        }
                 }
 
                 if (spaceIsDown && p.distanceTo(player.position) < player.radius && player.energy > 11) {
@@ -485,10 +495,10 @@ var Core = new function () {
                     score += 4;
                 }
 
-                if (p.distanceTo(player.position) < player.energyRadius + (p.size * 0.3)) {
+                if (p.distanceTo(player.position) < player.energyRadius +  (p.size * 0.5)) {
+                    console.log("It's me the "+i+"th one");
                     if (p.type == ORGANISM_ENEMY) {
                         player.energy -= 6;
-                        player.radius -= 1;
                     }
 
                     if (p.type == ORGANISM_ENERGY) {
@@ -540,11 +550,11 @@ var Core = new function () {
             p.position.y += p.velocity.y;
 
             // Fade out
-            p.alpha -= 0.02;
+            p.alpha -= 0.05;
 
             // Draw the particle
-            context.fillStyle = 'rgba(255,255,255,' + Math.max(p.alpha, 0) + ')';
-            context.fillRect(p.position.x, p.position.y, 1, 1);
+            context.fillStyle = 'rgba(255,140,0,' + Math.max(p.alpha, 0) + ')';
+            context.fillRect(p.position.x, p.position.y, 2, 2);
 
             // If the particle is faded out to less than zero, remove it
             if (p.alpha <= 0) {
@@ -670,10 +680,10 @@ Player.prototype.updateCore = function () {
 function Enemy() {
     this.position = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };
-    this.size = 30 + (Math.random() * 10);
-    var i=Math.floor(Math.random()*5);
-    console.log(i);
-    this.image= baditems[i];
+    this.size = 40 + (Math.random() * 4);
+    // var i=Math.floor(Math.random()*5);
+    // this.image= baditems[i];
+    this.image="pizza";
     this.speed = 1;
     this.type = 'enemy';
 }
@@ -682,7 +692,7 @@ Enemy.prototype = new Point();
 function Energy() {
     this.position = { x: 0, y: 0 };
     this.velocity = { x: 0, y: 0 };
-    this.size = 40 + (Math.random() * 10);
+    this.size = 40 + (Math.random() * 6);
     this.image= "carrot";
     this.speed = 1;
     this.type = 'energy';

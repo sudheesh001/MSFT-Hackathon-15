@@ -142,9 +142,10 @@ a[href="http://www.w3counter.com"] {
  *********************************************/
 
 canvas {
-	border: 6px #333333 solid;
-	cursor: crosshair;
+	/*border: 6px #333333 solid;*/
+	/*cursor: crosshair;*/
 	z-index: 1;
+	
 }
 
 #background {

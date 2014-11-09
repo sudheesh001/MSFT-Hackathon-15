@@ -442,12 +442,15 @@ var Core = new function(){
 			p.position.y += p.velocity.y;
 			
 			p.alpha += ( 1 - p.alpha ) * 0.1;
-			
-			if( p.type == ORGANISM_ENEMY ) context.fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';
-			if( p.type == ORGANISM_ENERGY ) context.fillStyle = 'rgba( 0, 235, 190, ' + p.alpha + ' )';
+			var image=new Image();
+			image.src="./Pizza.svg";
+			if( p.type == ORGANISM_ENEMY ) context.drawImage(image,p.position.x,p.position.y,80,80);/*fillStyle = 'rgba( 255, 0, 0, ' + p.alpha + ' )';*/
+			var image1=new Image();
+			image1.src="./img/carrot.png";
+			if( p.type == ORGANISM_ENERGY ) context.drawImage(image1,p.position.x,p.position.y,20,20);/*context.fillStyle = 'rgba( 0, 235, 190, ' + p.alpha + ' )';*/
 			
 			context.beginPath();
-			context.arc(p.position.x, p.position.y, p.size/2, 0, Math.PI*2, true);
+			// context.arc(p.position.x, p.position.y, p.size/2, 0, Math.PI*2, true);
 			context.fill();
 			
 			var angle = Math.atan2( p.position.y - player.position.y, p.position.x - player.position.x );

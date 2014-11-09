@@ -246,3 +246,13 @@ canvas {
 	color: #ffffff;
 }
 
+/*Added*/
+#info{
+	float: right;
+	color: black;
+	width:20%;
+}
+.good{
+	background-color: rgba(0,255,0,0.2);
+	width:200px;
+}
